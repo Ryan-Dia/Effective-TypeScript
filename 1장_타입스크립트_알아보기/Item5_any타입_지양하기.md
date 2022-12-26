@@ -125,8 +125,8 @@ function handleSelectItem(item: any){
 renderSelector({onSelectItem: handleSelectItem});
 ```
 
-onSelectItem에 아이템 객체를 필요한 부분만 전달하도록 컴포넌트를 개선해보겠다.
-여기서는 id만 필요하기에 ComponentProps의 시그니처를 다음 처럼 변경하면 좋다.
+>onSelectItem에 아이템 객체를 필요한 부분만 전달하도록 컴포넌트를 개선해보겠다.
+>여기서는 id만 필요하기에 ComponentProps의 시그니처를 다음 처럼 변경하면 좋다.
 ```ts
 interface ComponentProps {
  onSelectItem: (id: number) => void;
