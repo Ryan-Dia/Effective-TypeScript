@@ -1,16 +1,18 @@
 # 📕 읽은내용 정리해보기
 
 
-## 📚 Item 8 타입 공간과 값 공간의 심벌 구분하기
+#<img width="865" alt="image" src="https://user-images.githubusercontent.com/76567238/212522240-661fc4f6-fefa-4328-a41e-2e7b0ea9d99a.png">
+ 📚 Item 8 타입 공간과 값 공간의 심벌 구분하기
 - 타입스크립트의 심벌은 타입 공간이나 값 공간 중의 한 곳에 존재한다.
 
 > 심벌은 이름이 같더라도 속하는 공간에 따라 다른 것을 나타낼 수 있기 때문에 혼란스러울 수 있다.
 ```ts
+// Cylinder은 타입으로 사용
 interface Cylinder {
   radius: number;
   height: number;
 }
-
+// Cylinder로 이름은 같지만 값으로 사용
 const Cylinder = (radius: number, height: number) => ({radius, height});
 ```
 - interface Cylinder에서 Cylinder는 타입으로 쓰이는 중이다. const  Cylinder에서 Cylinder와 이름은 같지만 값으로 쓰이며, 서로 아무런 관련도 없다.
@@ -27,6 +29,8 @@ function calculateVolume(shape: unknown) {
 그러나 instanceof는 자바스크립트의 런타임 연산자이고, 값에 대해서 연산을 한다.   
 그래서 instanceof Cylinder는 타입이 아니라 함수를 참조한다.   
 <br>
+
+## 그렇다면 타입과 값은 어떻게 구분할 수 있을까?
 
 > 한 심벌이 타입인지 값인지는 언뜻 봐서 알 수 없다.  어떤 형태로 쓰이는지 문맥을 살펴 알아내야 한다.   
 ```ts
