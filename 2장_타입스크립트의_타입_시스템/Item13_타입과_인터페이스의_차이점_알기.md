@@ -151,4 +151,78 @@ class StateI implements IState {
   capital: string = '';
 }
 ```
+지금까지 타입과 인터페이스의 비슷한 점들을 살펴보았다.   
+이제부터는 타입과 인터페이스의 다른점을 알아보자.
 
+---
+
+## Type 과 Interface의 차이점   
+
+유니온 타입은 있지만 유니온 인터페이스라는 개념은 없다.   
+```ts
+type AorB = 'a' | 'b';
+```
+
+인터페이스는 타입을 확장할 수 있지만, 유니온은 할 수 없다.   
+그런데 유니온 타입을 확장하는 게 필요할 때가 있다.   
+>Input과 Output은 별도의 타입이며 이 둘을 하나의 변수명으로 매핑하는 VariableMap 인터페이스를 만들 수 있다.   
+```ts
+type Input = { /* ... */ };
+type Output = { /* ... */ };
+interface VariableMap {
+  [name: string]: Input | Output;
+}
+```
+>또는 유니온 타입에 name 속성을 붙인 타입을 만들 수도 있다.   
+>다음과 같다.
+```ts
+type NamedVariable = (Input | Output) & { name: string };
+```
+이 타입은 인터페이스로 표현할 수 없다.   
+type 키워드는 일반적으로 interface보다 쓰임새가 많다.   
+type 키워드는 유니온이 될 수도 있고, 매핑된 타입 또는 조건부 타입 같은 고급 기능에 활용되기도 한다.   
+>튜플과 배열 타입도 type 키워드를 이용해 더 간결하게 표현할 수 있다.
+```ts
+type Pair = [number, number]
+type StringList = string[];
+type NamedNums = [string, ...number[]];
+```
+>인터페이스로도 튜플과 비슷하게 구현할 수 있기는 하다.   
+```ts
+interface Tuple{
+  0: number;
+  1: number;
+  length: 2
+}
+const t: Tuple = [10, 20]; // 정상
+```
+
+그러나 인터페이스로 튜플과 비슷하게 구현하면 튜플에서 사용할 수 있는 concat 같은 메서드들을 사용할 수 없습니다.   
+그러므로 튜플은 type 키워드로 구현하는 것이 낫다.   
+   
+반면 인터페이스는 타입에 없는 몇 가지 기능이 있다. 
+그중 하나는 바로 `보강(augment)`이 가능하다는 것이다.   
+이번 아이템 처음에 등장했던 State예제에 population 필드를 추가할 때 보강 기법을 사용할 수 있다.   
+```ts
+interface IState {
+  name: string;
+  capital: string;
+}
+interface IState {
+  population: number;
+}
+const wyoming: IState = {
+  name: 'Wyoming',
+  capital: 'Cheyenne',
+  population: 500_000
+};  // OK
+```
+이 예제처럼 속성을 확장하는 것을 `선언 병합(declaration merging)`이라고 한다.   
+`선언 병합`을 본 적이 없다면 매우 생소하게 느껴질 것이다.   
+`선언 병합`은 주로 타입 선언 파일에서 사용된다. 따라서 타입 선언 파일을 작성할 때는 선언 병합을 지원하기 위해 반드시 인터페이스를 사용해야 하며 표준을 따라야한다.   
+타입 선언에는 사용자가 채워야 하는 빈틈이 있을 수 있는데, 바로 이 `선언 병합`이 그렇다.   
+   
+타입스크립트 여러 버전의 자바스크립트 표준 라이브러리에서 여러 타입을 모아 병합한다.
+
+
+  
