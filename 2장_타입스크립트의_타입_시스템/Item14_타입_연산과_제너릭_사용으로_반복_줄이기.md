@@ -200,3 +200,57 @@ ActionType은 Pick을 사용하여 얻게 되는, type 속성을 가지는 인�
 ```ts
 type ActionRec = Pick<Action, 'type'>; // {type: "save | "load" }
 ```
+
+
+---
+
+생성하고 난 다음에 업데이트가 되는 클래스를 정의한다면, update 메서드 매개변수의 타입은 생성자와 동일한 매개변수이면서,   
+타입 대부분이 선택적 필드가 된다.
+```ts
+interface Options {
+  width: number;
+  height: number;
+  color: string;
+  label: string;
+}
+interface OptionsUpdate {
+  width?: number;
+  height?: number;
+  color?: string;
+  label?: string;
+}
+class UIWidget {
+  constructor(init: Options) { /* ... */ }
+  update(options: OptionsUpdate) { /* ... */ }
+}
+```
+>매핑된 타입과 keyof를 사용하면 Options으로부터 OptionsUpdate를 만들 수 있다.   
+```ts
+interface Options {
+  width: number;
+  height: number;
+  color: string;
+  label: string;
+}
+type OptionsUpdate = {[k in keyof Options]?: Options[k]};
+
+
+type OptionsKeys = keyof Options;
+// Type is "width" | "height" | "color" | "label"
+```
+- keyof는 타입을 받아서 속성 타입의 유니온을 반환한다.   
+`매핑된 타입([k in keyof Options])`은 순회하며 `Options` 내 `k`값에 해당하는 속성이 있는지 찾는다.   
+?는 각 속성을 선택적으로 만든다.   
+>이 패턴 역시 아주 일반적이며 표준 라이브러리에 Partial이라는 이름으로 포함되어 있다.   
+```ts
+interface Options {
+  width: number;
+  height: number;
+  color: string;
+  label: string;
+}
+class UIWidget {
+  constructor(init: Options) { /* ... */ }
+  update(options: Partial<Options>) { /* ... */ }
+}
+```
