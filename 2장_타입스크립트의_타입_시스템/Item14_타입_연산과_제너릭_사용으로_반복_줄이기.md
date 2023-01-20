@@ -254,3 +254,53 @@ class UIWidget {
   update(options: Partial<Options>) { /* ... */ }
 }
 ```
+
+    
+## 값의 형태에 해당하는 타입을 정의하고 싶을 때
+
+```ts
+const INIT_OPTIONS = {
+  width: 640,
+  height: 480,
+  color: '#00FF00',
+  label: 'VGA',
+};
+interface Options {
+  width: number;
+  height: number;
+  color: string;
+  label: string;
+}
+```
+>이런 경우 `typeof`를 사용하면 된다.
+```ts
+type Options = typeof INIT_OPTIONS;
+```
+이 코드는 자바스크립트의 런타임 연산자 typeof를 사용한 것처럼 보이지만, 실제로는 타입스크립트 단계에서 연산되며 훨씬 더 정확하게 타입을 표현한다.   
+그런데 값으로부터 타입을 만들어 낼 때는 선언의 순서에 주의해야한다.   
+타입 정의를 먼저하고 값이 그 타입에 할당 가능하다고 선언하는 것이 좋다.   
+그렇게 해야 타입이 더 명확해지고, 예상하기 어려운 타입 변동을 방지할 수 있다.   
+
+---
+
+## 함수나 메서드의 반환값에 명명된 타입을 만들고 싶을 때  
+```ts
+function getUserInfo(userId: string) {
+  // COMPRESS
+  const name = 'Bob';
+  const age = 12;
+  const height = 48;
+  const weight = 70;
+  const favoriteColor = 'blue';
+  // END
+  return {
+    userId,
+    name,
+    age,
+    height,
+    weight,
+    favoriteColor,
+  };
+}
+// 추론된 반환 타입은 { userId: string; name: string; age: number, ... }
+```
