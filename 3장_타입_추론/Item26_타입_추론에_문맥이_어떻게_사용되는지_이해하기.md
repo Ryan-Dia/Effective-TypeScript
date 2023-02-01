@@ -66,3 +66,80 @@ setLanguage(language); // 정상
 이제부터 이러한 문맥의 소실로 인해 오류가 발생하는 몇 가지 경우와, 이를 어떻게 해결하는지 하나하나 살펴보자.
 
 ### 튜플 사용시 주의점
+
+문자열 리터럴 타입과 마찬가지로 튜플 타입에서도 문제가 발생한다.   
+>이동이 가능한 지도를 보여주는 프로그램을 작성한다고 생각해 보자
+```ts
+type Language = 'JavaScript' | 'TypeScript' | 'Python';
+function setLanguage(language: Language) { /* ... */ }
+// Parameter is a (latitude, longitude) pair.
+function panTo(where: [number, number]) { /* ... */ }
+
+panTo([10, 20]);  // OK
+
+const loc = [10, 20];
+panTo(loc);
+//    ~~~ Argument of type 'number[]' is not assignable to
+//        parameter of type '[number, number]'
+```
+loc 타입을 number[]로 추론한다.   
+많은 배열이 이와 맞지 않는 수의 요소를 가지므로 튜플 타입에 할당할 수 없다.   
+   
+그러면 any를 사용하지 않고 오류를 고칠 수 있는 방법을 생각해 보자.   
+   
+타입스크립트가 의도를 정확히 파악할 수 있도록 타입 선언을 제공하는 방법을 시도해보자.   
+```ts
+const loc: [number, number] = [10, 20];
+panTo(loc); // 정상
+```
+
+any를 사용하지 않고 또 고칠 수 있는 방법은 '상수 문맥'을 제공하는 것이다.   
+const는 단지 값이 가리키는 참조가 변하지 않는 얕은 상수인 반면, as const는 그 값이 내부까지 상수라는 사실을 타입스크립트에게 알려준다.   
+```ts
+const loc = [10, 20] as const;
+panTo(loc);
+   // ~~~ Type 'readonly [10, 20]' is 'readonly'
+   //     and cannot be assigned to the mutable type '[number, number]'
+```
+이 추론은 너무 과하게 정확하다.   
+   
+any를 사용하지 않고 오류를 고칠 수 잇는 최선의 해결책은 panTo 함수에 readonly 구문을 추가하는 것이다.   
+```ts
+function panTo(where: readonly [number, number]) { /* ... */ }
+const loc = [10, 20] as const;
+panTo(loc);  // OK
+```
+
+### 객체 사용 시 주의점
+
+
+문맥에서 값을 분리하는 문제는 문자열 리터럴이나 튜플을 포함하는 큰 객체에서 상수를 뽑아낼 때도 발생한다.
+```ts
+type Language = 'JavaScript' | 'TypeScript' | 'Python';
+interface GovernedLanguage {
+  language: Language;
+  organization: string;
+}
+
+function complain(language: GovernedLanguage) { /* ... */ }
+
+complain({ language: 'TypeScript', organization: 'Microsoft' });  // OK
+
+const ts = {
+  language: 'TypeScript',
+  organization: 'Microsoft',
+};
+complain(ts);
+//       ~~ Argument of type '{ language: string; organization: string; }'
+//            is not assignable to parameter of type 'GovernedLanguage'
+//          Types of property 'language' are incompatible
+//            Type 'string' is not assignable to type 'Language'
+```
+ts 객체에서 language의 타입은 string으로 추론된다.   
+이 문제는 타입 선언을 추가하거나(const ts: GovernedLanguage = ...) 상수 단언(as const)을 사용해 해결하자.
+
+## 요약
+
+- 타입 추론에서 문맥이 어떻게 쓰이는지 주의해서 살펴보자
+- 변수를 뽑아서 별도로 선언했을 때 오류가 발생한다면 타입 선언을 추가해야 한다.
+- 변수가 정말로 상수라면 상수 단언(as const)을 사용해야 한다. 그러나 상수 단언을 사용하면 정의한 곳이 아니라 사용한 곳에서 오류가 발생하므로 주의해야 한다.
