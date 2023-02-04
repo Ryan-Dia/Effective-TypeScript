@@ -89,6 +89,24 @@ interface State {
 현재 페이지는 발생하는 모든 요청의 상태로서, 명시적으로 모델링되었다.   
 >그 결과 개선된 renderPage와 changePage 함수는 쉽게 구현할 수 있다.   
 ```ts
+interface RequestPending {
+  state: 'pending';
+}
+interface RequestError {
+  state: 'error';
+  error: string;
+}
+interface RequestSuccess {
+  state: 'ok';
+  pageText: string;
+}
+type RequestState = RequestPending | RequestError | RequestSuccess;
+
+interface State {
+  currentPage: string;
+  requests: {[page: string]: RequestState};
+}
+function getUrlForPage(p: string) { return ''; }
 function renderPage(state: State) {
   const {currentPage} = state;
   const requestState = state.requests[currentPage];
