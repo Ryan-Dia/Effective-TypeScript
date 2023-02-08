@@ -153,6 +153,8 @@ pluck(albums, 'recordingDate');
            //                 assignable to parameter of type ...
 ```
 매개변수 타입이 정밀해진 덕분에 언어 서비스는 Album의 키에 자동 완성 기능을 제공할 수 있게 해준다.   
+<img width="486" alt="image" src="https://user-images.githubusercontent.com/76567238/217654772-7bc08db3-ebaa-4eb5-ae08-26e59761deae.png">
+타입을 string으로 했으면 이렇게 자동완성이 뜨지 않는다.
     
 string은 any와 비슷한 문제를 가지고 있다.   
 따라서 잘못 사용하게 되면 무효한 값을 허용하고 타입 간의 관계도 감추어 버린다.   
