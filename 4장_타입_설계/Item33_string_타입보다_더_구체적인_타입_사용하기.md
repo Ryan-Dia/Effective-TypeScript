@@ -47,7 +47,7 @@ interface Album {
 ```
 이런식으로 코드를 작성한다면 앞의 코드보다 오류를 더 세밀하게 체크한다.   
    
-이러한 방식에는 세 가지 장점이 더 있다.   
+이렇게 string 타입보다 더 구체적인 타입을 사용하면 세 가지 장점이 있다.
    
 첫 번째, 타입을 명시적으로 정의함으로써 다른 곳으로 값이 전달되어도 타입 정보가 유지된다.   
     
@@ -60,13 +60,18 @@ function getAlbumsOfType(recordingType: string): Album[] {
   // END
 }
 ```
+이런식으로 string으로 입력하고 다른 곳에서 호출할 때 recordingType이 무엇인지 알 수 없다. 
+
+하지만 `getAlbumsOfType(recording: RecordingType): Album[]`이렇게 타입을 명시해주면 타입을 미리 알 수 있다.
+<img width="713" alt="image" src="https://user-images.githubusercontent.com/76567238/217662385-3a21be73-8139-4024-8e14-916dd5c7eab5.png">
+
    
 두 번째, 타입을 명시적으로 정의하고 해당 타입의 의미를 설명하는 주석을 붙여넣을 수 있다.   
 ```ts
 /** 이 녹음은 어떤 환경에서 이루어졌는지? */
 type RecordingType = 'live' | 'studio';
 ```
-getAlbumsOfType이 받는 매개변수를 stringㅁ 대신 RecordingType으로 바꾸면,   
+getAlbumsOfType이 받는 매개변수를 string 대신 RecordingType으로 바꾸면,   
 함수를 사용하는 곳에서 RecordingType의 설명을 볼 수 있다.   
     
 세 번째, keyof 연산자로 더욱 세밀하게 객체의 속성 체크가 가능해진다.   
